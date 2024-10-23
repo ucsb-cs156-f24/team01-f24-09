@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-f24/team01-f24-09
 owner: ucsb-cs156-f24
 repo_name: team01-f24-09
-pull_requests: []
+pull_requests: [{"author":{"id":"U_kgDOBtFE9g","is_bot":false,"login":"TomShangguan","name":""},"headRefName":"tom-UCSBDiningCommonsMenuItem-create-db","number":45,"title":"tom-UCSBDiningCommonsMenuItem-create-db","url":"https://github.com/ucsb-cs156-f24/team01-f24-09/pull/45"},{"author":{"id":"U_kgDOB2_DTg","is_bot":false,"login":"elijahelephant","name":"Elijah Williams"},"headRefName":"ucsborganization-database","number":44,"title":"Ucsborganization database","url":"https://github.com/ucsb-cs156-f24/team01-f24-09/pull/44"}]
