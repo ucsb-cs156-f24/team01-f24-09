@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/ucsborganization")
 @RestController
 @Slf4j
-public class UCSBDOrganizationController extends ApiController {
+public class UCSBOrganizationController extends ApiController {
 
     @Autowired
     UCSBOrganizationRepository ucsbOrganizationRepository;
