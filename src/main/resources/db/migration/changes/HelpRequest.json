@@ -12,7 +12,7 @@
               "not": [
                 {
                   "tableExists": {
-                    "tableName": "HELPREQUEST"
+                    "tableName": "HELPREQUESTS"
                   }
                 }
               ]
@@ -21,14 +21,14 @@
           "changes": [
             {
               "createTable": {
-                "tableName": "HelpRequest",
+                "tableName": "HelpRequests",
                 "columns": [
                   {
                     "column": {
                       "autoIncrement": true,
                       "constraints": {
                         "primaryKey": true,
-                        "primaryKeyName": "HELPREQUEST_PK"
+                        "primaryKeyName": "HELPREQUESTS_PK"
                       },
                       "name": "ID",
                       "type": "BIGINT"
