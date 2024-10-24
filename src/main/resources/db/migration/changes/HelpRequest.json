@@ -54,7 +54,7 @@
                   },
                   {
                     "column": {
-                      "name": "REQUESTER_TIME",
+                      "name": "REQUEST_TIME",
                       "type": "TIMESTAMP"
                     }
                   },
