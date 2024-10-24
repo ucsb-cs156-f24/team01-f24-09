@@ -39,7 +39,7 @@ public class UCSBOrganizationController extends ApiController {
      * @return an iterable of UCSBOrganization
      */
 
-    @Operation(summary= "List all UCSB organizations")
+    @Operation(summary = "List all UCSB organizations")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
     public Iterable<UCSBOrganization> allOrganizations() {
@@ -47,16 +47,14 @@ public class UCSBOrganizationController extends ApiController {
         return organizations;
     }
 
-    @Operation(summary= "Create a new organization")
+    @Operation(summary = "Create a new organization")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/post")
     public UCSBOrganization postOrganization(
-        @Parameter(name="orgCode") @RequestParam String orgCode,
-        @Parameter(name="orgTranslationShort") @RequestParam String orgTranslationShort,
-        @Parameter(name="orgTranslation") @RequestParam String orgTranslation,
-        @Parameter(name="inactive") @RequestParam boolean inactive
-        )
-        {
+            @Parameter(name = "orgCode") @RequestParam String orgCode,
+            @Parameter(name = "orgTranslationShort") @RequestParam String orgTranslationShort,
+            @Parameter(name = "orgTranslation") @RequestParam String orgTranslation,
+            @Parameter(name = "inactive") @RequestParam boolean inactive) {
 
         UCSBOrganization organization = new UCSBOrganization();
         organization.setOrgCode(orgCode);
@@ -68,6 +66,16 @@ public class UCSBOrganizationController extends ApiController {
 
         return savedOrganization;
     }
-    
+
+    @Operation(summary = "Get a single UCSB organization by id (@Id)")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public UCSBOrganization getById(
+            @Parameter(name = "id") @RequestParam String id) {
+        UCSBOrganization organization = ucsbOrganizationRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(UCSBOrganization.class, id));
+        return organization;
+    }
 
 }
