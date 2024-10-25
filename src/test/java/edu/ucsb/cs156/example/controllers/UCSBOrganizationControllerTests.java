@@ -361,4 +361,77 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
         assertEquals(true, savedOrganization.getInactive());
     }
 
+    @WithMockUser(roles = { "ADMIN" })
+    @Test
+    public void admin_can_delete_an_organization() throws Exception {
+        // arrange
+        UCSBOrganization organization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("Organization 1")
+                .orgTranslation("Organization 1 Full Name")
+                .inactive(false)
+                .build();
+
+        when(ucsbOrganizationRepository.findById(eq("org1"))).thenReturn(Optional.of(organization));
+
+        // act
+        MvcResult response = mockMvc.perform(
+                delete("/api/ucsborganization?id=org1")
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(ucsbOrganizationRepository, times(1)).findById("org1");
+        verify(ucsbOrganizationRepository, times(1)).delete(organization);
+
+        Map<String, Object> json = responseToJson(response);
+        assertEquals("UCSBOrganization with id org1 deleted", json.get("message"));
+    }
+
+    @WithMockUser(roles = { "ADMIN" })
+    @Test
+    public void admin_tries_to_delete_non_existing_organization_and_gets_right_error_message() throws Exception {
+        // arrange
+        when(ucsbOrganizationRepository.findById(eq("non-existing-id"))).thenReturn(Optional.empty());
+
+        // act
+        MvcResult response = mockMvc.perform(
+                delete("/api/ucsborganization?id=non-existing-id")
+                        .with(csrf()))
+                .andExpect(status().isNotFound()).andReturn();
+
+        // assert
+        verify(ucsbOrganizationRepository, times(1)).findById("non-existing-id");
+        Map<String, Object> json = responseToJson(response);
+        assertEquals("UCSBOrganization with id non-existing-id not found", json.get("message"));
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void regular_users_cannot_delete() throws Exception {
+        // arrange
+        UCSBOrganization organization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("Organization 1")
+                .orgTranslation("Organization 1 Full Name")
+                .inactive(false)
+                .build();
+
+        when(ucsbOrganizationRepository.findById(eq("org1"))).thenReturn(Optional.of(organization));
+
+        // act
+        mockMvc.perform(
+                delete("/api/ucsborganization?id=org1")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void logged_out_users_cannot_delete() throws Exception {
+        // act
+        mockMvc.perform(
+                delete("/api/ucsborganization?id=org1")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
 }
