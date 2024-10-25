@@ -207,4 +207,158 @@ public class UCSBOrganizationControllerTests extends ControllerTestCase {
         assertEquals("UCSBOrganization with id fake-org not found", json.get("message"));
     }
 
+    @WithMockUser(roles = { "ADMIN", "USER" })
+    @Test
+    public void admin_can_edit_an_existing_organization() throws Exception {
+        // arrange
+        UCSBOrganization origOrganization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("Original ShortName")
+                .orgTranslation("Original Full Name")
+                .inactive(false)
+                .build();
+
+        UCSBOrganization editedOrganization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("New ShortName")
+                .orgTranslation("New Full Name")
+                .inactive(true)
+                .build();
+
+        String requestBody = mapper.writeValueAsString(editedOrganization);
+
+        when(ucsbOrganizationRepository.findById(eq("org1"))).thenReturn(Optional.of(origOrganization));
+
+        // act
+        MvcResult response = mockMvc.perform(
+                put("/api/ucsborganization?id=org1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(ucsbOrganizationRepository, times(1)).findById("org1");
+        verify(ucsbOrganizationRepository, times(1)).save(origOrganization);
+
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(requestBody, responseString);
+    }
+
+    @WithMockUser(roles = { "ADMIN", "USER" })
+    @Test
+    public void admin_cannot_edit_organization_that_does_not_exist() throws Exception {
+        // arrange
+        UCSBOrganization editedOrganization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("New ShortName")
+                .orgTranslation("New Full Name")
+                .inactive(true)
+                .build();
+
+        String requestBody = mapper.writeValueAsString(editedOrganization);
+
+        when(ucsbOrganizationRepository.findById(eq("org1"))).thenReturn(Optional.empty());
+
+        // act
+        MvcResult response = mockMvc.perform(
+                put("/api/ucsborganization?id=org1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isNotFound()).andReturn();
+
+        // assert
+        verify(ucsbOrganizationRepository, times(1)).findById("org1");
+        Map<String, Object> json = responseToJson(response);
+        assertEquals("UCSBOrganization with id org1 not found", json.get("message"));
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void regular_users_cannot_edit() throws Exception {
+        // arrange
+        UCSBOrganization editedOrganization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("New ShortName")
+                .orgTranslation("New Full Name")
+                .inactive(true)
+                .build();
+
+        String requestBody = mapper.writeValueAsString(editedOrganization);
+
+        // act
+        mockMvc.perform(
+                put("/api/ucsborganization?id=org1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void logged_out_users_cannot_edit() throws Exception {
+        // arrange
+        UCSBOrganization editedOrganization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("New ShortName")
+                .orgTranslation("New Full Name")
+                .inactive(true)
+                .build();
+
+        String requestBody = mapper.writeValueAsString(editedOrganization);
+
+        // act
+        mockMvc.perform(
+                put("/api/ucsborganization?id=org1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody))
+                .andExpect(status().isForbidden());
+    }
+
+    @WithMockUser(roles = { "ADMIN", "USER" })
+    @Test
+    public void admin_tries_to_edit_organization_with_different_orgCode() throws Exception {
+        UCSBOrganization origOrganization = UCSBOrganization.builder()
+                .orgCode("org1")
+                .orgTranslationShort("Original ShortName")
+                .orgTranslation("Original Full Name")
+                .inactive(false)
+                .build();
+
+        UCSBOrganization editedOrganization = UCSBOrganization.builder()
+                .orgCode("org2") // different orgCode than the original
+                .orgTranslationShort("New ShortName")
+                .orgTranslation("New Full Name")
+                .inactive(true)
+                .build();
+
+        String requestBody = mapper.writeValueAsString(editedOrganization);
+
+        when(ucsbOrganizationRepository.findById(eq("org1"))).thenReturn(Optional.of(origOrganization));
+
+        MvcResult response = mockMvc.perform(
+                put("/api/ucsborganization?id=org1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        verify(ucsbOrganizationRepository, times(1)).findById("org1");
+        verify(ucsbOrganizationRepository, times(1)).save(origOrganization);
+
+        String responseString = response.getResponse().getContentAsString();
+        UCSBOrganization savedOrganization = mapper.readValue(responseString, UCSBOrganization.class);
+        assertEquals("org1", savedOrganization.getOrgCode());
+
+        assertEquals("New ShortName", savedOrganization.getOrgTranslationShort());
+        assertEquals("New Full Name", savedOrganization.getOrgTranslation());
+        assertEquals(true, savedOrganization.getInactive());
+    }
+
 }
