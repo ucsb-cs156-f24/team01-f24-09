@@ -1,6 +1,7 @@
 package edu.ucsb.cs156.example.controllers;
 
 import edu.ucsb.cs156.example.entities.MenuItemReview;
+import edu.ucsb.cs156.example.entities.UCSBDate;
 import edu.ucsb.cs156.example.errors.EntityNotFoundException;
 import edu.ucsb.cs156.example.repositories.MenuItemReviewRepository;
 
@@ -36,16 +37,13 @@ public class MenuItemReviewController extends ApiController{
     @Autowired
     MenuItemReviewRepository menuItemReviewRepository;
 
-    @Operation(summary= "Get a single review")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping("")
-    public MenuItemReview getById(
-            @Parameter(name="id") @RequestParam Long id) {
-        MenuItemReview menuItemReview = menuItemReviewRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(MenuItemReview.class, id));
-
-        return menuItemReview;
-    }
+    @Operation(summary= "List all menu item reviews")
+        @PreAuthorize("hasRole('ROLE_USER')")
+        @GetMapping("/all")
+        public Iterable<MenuItemReview> allMenuItemReviews() {
+            Iterable<MenuItemReview> reviews = menuItemReviewRepository.findAll();
+            return reviews;
+        }
 
     @Operation(summary= "Create a new review")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -61,7 +59,7 @@ public class MenuItemReviewController extends ApiController{
         // For an explanation of @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         // See: https://www.baeldung.com/spring-date-parameters
 
-        log.info("localDateTime={}", dateReviewed);
+        //log.info("localDateTime={}", dateReviewed);
 
         MenuItemReview menuItemReview = new MenuItemReview();
         menuItemReview.setItemId(itemId);
