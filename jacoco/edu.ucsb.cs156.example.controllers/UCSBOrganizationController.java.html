@@ -78,5 +78,39 @@ import jakarta.validation.Valid;
 <span class="fc" id="L78">        return organization;</span>
     }
 
+    @Operation(summary = &quot;Update a single organization&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PutMapping(&quot;&quot;)
+    public UCSBOrganization updateOrganization(
+            @Parameter(name = &quot;id&quot;) @RequestParam String id,
+            @RequestBody @Valid UCSBOrganization incoming) {
+
+<span class="fc" id="L88">        UCSBOrganization organization = ucsbOrganizationRepository.findById(id)</span>
+<span class="fc" id="L89">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBOrganization.class, id));</span>
+
+        // Remove this line since we don't want to change the ID
+        // organization.setOrgCode(incoming.getOrgCode());
+
+<span class="fc" id="L94">        organization.setOrgTranslationShort(incoming.getOrgTranslationShort());</span>
+<span class="fc" id="L95">        organization.setOrgTranslation(incoming.getOrgTranslation());</span>
+<span class="fc" id="L96">        organization.setInactive(incoming.getInactive());</span>
+
+<span class="fc" id="L98">        ucsbOrganizationRepository.save(organization);</span>
+
+<span class="fc" id="L100">        return organization;</span>
+    }
+
+    @Operation(summary = &quot;Delete a UCSB Organization&quot;)
+    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @DeleteMapping(&quot;&quot;)
+    public Object deleteOrganization(
+            @Parameter(name = &quot;id&quot;) @RequestParam String id) {
+<span class="fc" id="L108">        UCSBOrganization organization = ucsbOrganizationRepository.findById(id)</span>
+<span class="fc" id="L109">                .orElseThrow(() -&gt; new EntityNotFoundException(UCSBOrganization.class, id));</span>
+
+<span class="fc" id="L111">        ucsbOrganizationRepository.delete(organization);</span>
+<span class="fc" id="L112">        return genericMessage(&quot;UCSBOrganization with id %s deleted&quot;.formatted(id));</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
