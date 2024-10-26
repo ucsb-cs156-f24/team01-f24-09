@@ -21,7 +21,7 @@
           "changes": [
             {
               "createTable": {
-                "tableName": "HelpRequests",
+                "tableName": "HELPREQUESTS",
                 "columns": [
                   {
                     "column": {
