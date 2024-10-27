@@ -49,7 +49,7 @@ public class MenuItemReviewController extends ApiController{
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/post")
     public MenuItemReview postMenuItemReview(
-            @Parameter(name="item_id") @RequestParam Long itemId,
+            @Parameter(name="itemId") @RequestParam Long itemId,
             @Parameter(name="reviewerEmail") @RequestParam String reviewerEmail,
             @Parameter(name="stars") @RequestParam int stars,
             @Parameter(name="dateReviewed", description="date (in iso format, e.g. YYYY-mm-ddTHH:MM:SS; see https://en.wikipedia.org/wiki/ISO_8601)") @RequestParam("dateReviewed") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateReviewed,
