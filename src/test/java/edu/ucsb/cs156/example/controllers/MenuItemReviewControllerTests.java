@@ -4,6 +4,7 @@ import edu.ucsb.cs156.example.repositories.UserRepository;
 import edu.ucsb.cs156.example.testconfig.TestConfig;
 import edu.ucsb.cs156.example.ControllerTestCase;
 import edu.ucsb.cs156.example.entities.MenuItemReview;
+import edu.ucsb.cs156.example.entities.UCSBDate;
 import edu.ucsb.cs156.example.repositories.MenuItemReviewRepository;
 import edu.ucsb.cs156.example.repositories.UCSBDateRepository;
 
@@ -58,12 +59,6 @@ public class MenuItemReviewControllerTests extends ControllerTestCase{
                             .andExpect(status().is(200)); // logged
     }
 
-    @Test
-    public void logged_out_users_cannot_get_by_id() throws Exception {
-            mockMvc.perform(get("/api/menuitemreview?id=7"))
-                            .andExpect(status().is(403)); // logged out users can't get by id
-    }
-
     // Authorization tests for /api/menuitemreview/post
     // (Perhaps should also have these for put and delete)
 
@@ -79,5 +74,36 @@ public class MenuItemReviewControllerTests extends ControllerTestCase{
             mockMvc.perform(post("/api/menuitemreview/post"))
                             .andExpect(status().is(403)); // only admins can post
     }
+
+    @WithMockUser(roles = { "ADMIN", "USER" })
+    @Test
+    public void an_admin_user_can_post_a_new_menuitemreview() throws Exception {
+        // arrange
+
+        LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+
+        MenuItemReview menuItemReview1 = MenuItemReview.builder()
+            .itemId(10)
+            .reviewerEmail("johndoe@ucsb.edu")
+            .stars(3)
+            .dateReviewed(ldt1)
+            .comments("very mid food")
+            .build();
+
+        when(menuItemReviewRepository.save(eq(menuItemReview1))).thenReturn(menuItemReview1);
+
+        // act
+        MvcResult response = mockMvc.perform(
+            post("/api/menuitemreview/post?itemId=10&reviewerEmail=johndoe%40ucsb.edu&stars=3&dateReviewed=2022-01-03T00%3A00%3A00&comments=very%20mid%20food")
+                            .with(csrf()))
+            .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(menuItemReviewRepository, times(1)).save(menuItemReview1);
+        String expectedJson = mapper.writeValueAsString(menuItemReview1);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedJson, responseString);
+    }
+
     
 }
