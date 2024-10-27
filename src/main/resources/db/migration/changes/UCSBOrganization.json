@@ -1,61 +1,61 @@
 {
-  "databaseChangeLog": [
+    "databaseChangeLog": [
       {
-          "changeSet": {
-              "id": "UCSBOrganization-1",
-              "author": "MattP",
-              "preConditions": [
+        "changeSet": {
+          "id": "UCSBOrganization-1",
+          "author": "MattP",
+          "preConditions": [
+            {
+              "onFail": "MARK_RAN"
+            },
+            {
+              "not": [
+                {
+                  "tableExists": {
+                    "tableName": "UCSBORGANIZATION"
+                  }
+                }
+              ]
+            }
+          ],
+          "changes": [
+            {
+              "createTable": {
+                "columns": [
                   {
-                      "onFail": "MARK_RAN"
+                    "column": {
+                      "constraints": {
+                        "primaryKey": true,
+                        "primaryKeyName": "CONSTRAINT_ORG_CODE"
+                      },
+                      "name": "ORG_CODE",
+                      "type": "VARCHAR(255)"
+                    }
                   },
                   {
-                      "not": [
-                          {
-                              "tableExists": {
-                                  "tableName": "UCSBORGANIZATION"
-                              }
-                          }
-                      ]
-                  }
-              ],
-              "changes": [
+                    "column": {
+                      "name": "ORG_TRANSLATION_SHORT",
+                      "type": "VARCHAR(255)"
+                    }
+                  },
                   {
-                      "createTable": {
-                          "columns": [
-                              {
-                                  "column": {
-                                      "constraints": {
-                                          "primaryKey": true,
-                                          "primaryKeyName": "CONSTRAINT_ORGCODE"
-                                      },
-                                      "name": "ORG_CODE",
-                                      "type": "VARCHAR(255)"
-                                  }
-                              },
-                              {
-                                  "column": {
-                                      "name": "ORG_TRANSLATION_SHORT",
-                                      "type": "VARCHAR(255)"
-                                  }
-                              },
-                              {
-                                  "column": {
-                                      "name": "ORG_TRANSLATION",
-                                      "type": "VARCHAR(255)"
-                                  }
-                              },
-                              {
-                                  "column": {
-                                      "name": "INACTIVE",
-                                      "type": "BOOLEAN"
-                                  }
-                              }
-                          ],
-                          "tableName": "UCSBORGANIZATION"
-                      }
+                    "column": {
+                      "name": "ORG_TRANSLATION",
+                      "type": "VARCHAR(255)"
+                    }
+                  },
+                  {
+                    "column": {
+                      "name": "INACTIVE",
+                      "type": "BOOLEAN"
+                    }
                   }
-              ]
-          }
+                ],
+                "tableName": "UCSBORGANIZATION"
+              }
+            }
+          ]
+        }
       }
-  ]
-}
+    ]
+  }
