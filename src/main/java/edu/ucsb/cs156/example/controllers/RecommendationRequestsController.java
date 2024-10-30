@@ -103,7 +103,7 @@ public class RecommendationRequestsController extends ApiController {
      * Update a recommendation request by its ID
      *
      * @param id       the ID of the recommendation request to be updated
-     * @param req the new request data
+     * @param incoming the new request data
      * @return the updated RecommendationRequest
      */
     @Operation(summary = "Update a recommendation request")
